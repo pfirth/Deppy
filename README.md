@@ -8,8 +8,14 @@ The goal is to create a single user interface encapsolating the abilities of eac
 Things to be done (in no particular order):
 
 1) Python code for interacting with the 24V valves (Java should be able to accomplish this easily)
+
 2) Circuit/code to bypass the need for the MFC hub
+
 3) Fully functional interface (Java or Python)
+
 4) Automation of elliposometer measurements/file storage
+
 5) Remote monitoring of the chamber conditions (namely pressure)
+
+6) Java version of all the code (for portability)
 
