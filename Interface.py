@@ -107,6 +107,8 @@ class Process_Button(Widget):
         self.B.add_widget(self.Button)
         return self.B
 
+################################################################################################
+################################################################################################
 class Process_Button_2(Widget):
     def __init__(self):
         self.B = BoxLayout()
@@ -115,6 +117,8 @@ class Process_Button_2(Widget):
     def build(self):
         self.B.add_widget(self.Button)
         return self.B
+################################################################################################
+################################################################################################
 
 class Process_Container():
     def __init__(self):
@@ -128,7 +132,7 @@ class Process_Container():
         self.Gas_Button = self.Gas_Button_Object.build()
         self.RF_Button_Object = Process_Button()
         self.RF_Button = self.RF_Button_Object.build()
-        self.Move_Button_Object = Process_Button_2()
+        self.Move_Button_Object = Process_Button()
         self.Move_Button = self.Move_Button_Object.build()
 
 

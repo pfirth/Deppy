@@ -32,7 +32,8 @@ class Int(Interface):
         Motion = self.Motion_Control_Object
 
         self.Process_Container_Object.Vacuum_Button_Object.Button.bind(on_press = self.Valve_Open)
-        self.Process_Container_Object.Move_Button_Object.Button.bind(on_press = lambda widget: Create_Thread(self.Move,))
+        self.Process_Container_Object.Move_Button_Object.Button.bind(on_press = lambda widget: Create_Thread(self.Move,
+                                                            self.Process_Container_Object.Move_Button_Object.Button))
         self.Parameter_Object.MFC1_Read_Label_Object.L.text = 'Hello'
 
         Motion.Home_Button_Object.Button.bind(on_press = lambda widget: Create_Thread(Chuck.Home,))
@@ -79,11 +80,17 @@ class Int(Interface):
         the readings from the MKS pressure sensor'''
         Create_Thread(self.Read_Pressure,)
 
-    def Move(self):
-        Chuck.Move('2')
-        Chuck.Move('3')
-        Chuck.Move('2')
-        Chuck.Move('3')
+    def Move(self,instance):
+        print instance.state
+        for i in range(3):
+            if i%2 == 0:
+                Chuck.Move('2')
+            else:
+                Chuck.Move('3')
+            if instance.state == 'normal':
+                break
+        instance.state = 'normal'
+
 
     def Read_Pressure(self):
         '''This function continually reads the pressure from the MKS
