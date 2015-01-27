@@ -18,7 +18,7 @@ class Viewer(Widget):
         self.Pops.background = 'images/Pop_Background.png'
 
         self.Pops.bind(on_open = lambda widget: self.FocTxt())
-        self.Tex = TextInput(font_size = 35)
+        self.Tex = TextInput(font_size = 35,multiline=False)
 
 
         self.B = Button(text = 'Press To Confirm')
@@ -31,7 +31,10 @@ class Viewer(Widget):
         '''When activated, this function changes the text
         of a button to the text of the text input, defocuses
         on the text input box and closes the popup'''
-        Bt.text =  Tx.text
+        if Tx.text.strip() == '':
+            Bt.text = '0'
+        else:
+            Bt.text =  Tx.text
         Tx.focus = False
         PP.dismiss()
 

@@ -19,3 +19,8 @@ Things to be done (in no particular order):
 
 6) Java version of all the code (for portability)
 
+7) In the MFC class, the standard for identifying the MFC port needs to be "standardized". In some places
+its an Int in others its a String.
+
+8) Need a check for value errors when setting values
+

@@ -20,6 +20,39 @@ from kivy.config import Config
 Config.set('graphics', 'width', '1200')
 Config.set('graphics', 'height', '600')
 
+class Motion_button(Button):
+    def __init__(self):
+        self.Button = Button()
+    def Build(self):
+        return self.Button
+
+class Motion_Control_Menu(Widget):
+    def __init__(self):
+        self.B = BoxLayout(pos_hint = {'x':0.335,'y':0.66},
+                         size_hint_x = 0.66, size_hint_y =  0.33)
+        self.G = GridLayout(rows = 1, cols = 4)
+
+        self.Home_Button_Object =Motion_button()
+        self.Home_Button = self.Home_Button_Object.Build()
+
+        self.Ellipsometer_Button_Object =Motion_button()
+        self.Ellipsometer_Button = self.Ellipsometer_Button_Object.Build()
+
+        self.Nozzle_Button_Object =Motion_button()
+        self.Nozzle_Button = self.Nozzle_Button_Object.Build()
+
+        self.Glove_Button_Object =Motion_button()
+        self.Glove_Button = self.Glove_Button_Object.Build()
+
+
+    def build(self):
+        self.G.add_widget(self.Home_Button)
+        self.G.add_widget(self.Ellipsometer_Button)
+        self.G.add_widget(self.Nozzle_Button)
+        self.G.add_widget(self.Glove_Button)
+
+        self.B.add_widget(self.G)
+        return self.B
 
 class Green_Set_Button(Widget):
     '''This Button class just sets the background to the desired images'''
@@ -28,9 +61,9 @@ class Green_Set_Button(Widget):
         self.Set_Label = Set_Label
 
         self.Button = Button(allow_stretch = False,
-                             keep_ratio = True)
+                             keep_ratio = True,text ='0')
 
-        self.Pop = Viewer('PopupPlaceHold_9876',self.Button,self.Set_Label).build()
+        self.Pop = Viewer('PopupPlaceHold_9876',self.Button,self.Button).build()
         self.Button.bind(on_press = lambda  widget: self.Pop.open())
 
     def build(self):
@@ -46,7 +79,7 @@ class MFC_Read_Label(Widget):
     '''place holder'''
     def __init__(self):
         self.B = BoxLayout()
-        self.L = Label(text = 'PlaceHolder', color = [0,0,0,1])
+        self.L = Label(text = '0', color = [0,0,0,1])
 
     def build(self):
         self.B.add_widget(self.L)
@@ -68,16 +101,24 @@ class Title(Widget):
 class Process_Button(Widget):
     def __init__(self):
         self.B = BoxLayout()
-        self.Button = ToggleButton(text = 'Process_Button', color = [1,0,0,1])
+        self.Button = ToggleButton(text = 'Process_Toggle_Button', color = [1,0,0,1])
 
     def build(self):
         self.B.add_widget(self.Button)
         return self.B
 
+class Process_Button_2(Widget):
+    def __init__(self):
+        self.B = BoxLayout()
+        self.Button = Button(text = 'Process__Button', color = [1,0,0,1])
+
+    def build(self):
+        self.B.add_widget(self.Button)
+        return self.B
 
 class Process_Container():
     def __init__(self):
-        self.Container = BoxLayout(pos_hint = {'x':0.335},
+        self.Container = BoxLayout(pos_hint = {'x':0.335,'y':0.01},
                          size_hint_x = 0.66, size_hint_y =  0.33)
         self.Grid = GridLayout(rows = 1, cols = 4)
 
@@ -87,7 +128,7 @@ class Process_Container():
         self.Gas_Button = self.Gas_Button_Object.build()
         self.RF_Button_Object = Process_Button()
         self.RF_Button = self.RF_Button_Object.build()
-        self.Move_Button_Object = Process_Button()
+        self.Move_Button_Object = Process_Button_2()
         self.Move_Button = self.Move_Button_Object.build()
 
 
@@ -190,7 +231,7 @@ class Parameter_Container(object):
         #Values(Label)
         self.Pressure_Space = Label() #This is just a place holder, will have no functionality
 
-        self.Pressure_Set_Object = MFC_Read_Label()
+        self.Pressure_Set_Object = Green_Set_Button(self.Pressure_Space)
         self.Pressure_Set = self.Pressure_Set_Object.build()
 
         self.Pressure_Read_Object = MFC_Read_Label()
@@ -221,19 +262,20 @@ class Parameter_Container(object):
         self.Grid.add_widget(self.MFC_Space)
 
         self.Grid.add_widget(self.MFC1_Label)
+        self.Grid.add_widget(self.MFC1_Button)
         self.Grid.add_widget(self.MFC1_Read_Label)
         self.Grid.add_widget(self.MFC1_Set_Label)
-        self.Grid.add_widget(self.MFC1_Button)
 
         self.Grid.add_widget(self.MFC2_Label)
+        self.Grid.add_widget(self.MFC2_Button)
         self.Grid.add_widget(self.MFC2_Read_Label)
         self.Grid.add_widget(self.MFC2_Set_Label)
-        self.Grid.add_widget(self.MFC2_Button)
 
         self.Grid.add_widget(self.MFC3_Label)
+        self.Grid.add_widget(self.MFC3_Button)
         self.Grid.add_widget(self.MFC3_Read_Label)
         self.Grid.add_widget(self.MFC3_Set_Label)
-        self.Grid.add_widget(self.MFC3_Button)
+
 
         #RF Additions
         self.Grid.add_widget(self.RF_Title)
@@ -259,44 +301,6 @@ class Parameter_Container(object):
         return self.Container
 
 
-class Generator_Container(object): #Thinking about getting rid of this
-    '''a class containing a box for all of the generator
-    set & reads'''
-
-    def __init__(self):
-        self.Container = BoxLayout(pos_hint = {'top':0.66},
-                           size_hint_x = 0.33, size_hint_y =  0.33)
-
-        self.Grid = GridLayout(rows = 2, cols = 3, spacing = 5)
-
-        #Title (Label)
-        self.Set_Title_Object = Title()
-        self.Set_Title = self.Set_Title_Object.build()
-        self.Read_Title_Object = Title()
-        self.Read_Title = self.Read_Title_Object.build()
-        self.Reflected_Title_Object = Title()
-        self.Reflected_Title = self.Reflected_Title_Object.build()
-        #Title (Label)
-
-        #Values(Label)
-        self.Read_Label_Object = MFC_Read_Label()
-        self.Read_Label = self.Read_Label_Object.build()
-        self.Reflected_Label_Object = MFC_Read_Label()
-        self.Reflected_Label = self.Reflected_Label_Object.build()
-        self.Set_Button_Object = Green_Set_Button(self.Read_Label)
-        self.Set_Button = self.Set_Button_Object.build()
-
-    def build(self):
-        self.Grid.add_widget(self.Read_Title)
-        self.Grid.add_widget(self.Reflected_Title)
-        self.Grid.add_widget(self.Set_Title)
-        self.Grid.add_widget(self.Read_Label)
-        self.Grid.add_widget(self.Reflected_Label)
-        self.Grid.add_widget(self.Set_Button)
-
-        self.Container.add_widget(self.Grid)
-        return self.Container
-
 
 class Interface(App):
     F = FloatLayout()
@@ -310,6 +314,8 @@ class Interface(App):
     Process_Container_Object = Process_Container()
     Process_Container = Process_Container_Object.build()
 
+    Motion_Control_Object = Motion_Control_Menu()
+    Motion_Control = Motion_Control_Object.build()
 
     close_toggle = ToggleButton()
 
@@ -318,6 +324,7 @@ class Interface(App):
         self.F.add_widget(self.Background_Box)
         self.F.add_widget(self.Parameter_Grid)
         self.F.add_widget(self.Process_Container)
+        self.F.add_widget(self.Motion_Control)
 
         return self.F
 

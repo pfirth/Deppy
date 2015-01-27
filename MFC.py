@@ -33,8 +33,6 @@ class MFC():
     def Get_Flowrate(self,Port):
         '''The command $BR<module>:<MFC Port> is used to get the string containing
         the flowrate of the MFC at <MFC Port>'''
-        print '$BR'+self.m+':'+ Port
-
         ret = self.__Receive_Data('$BR'+self.m+':'+ Port).split(':')[2]
         return ret
 
@@ -43,6 +41,7 @@ class MFC():
         flowrate.'''
         set_flow_command = '$AW' + self.m + ':'+ str(Port) + ':' + str(Flowrate)
         self.__Receive_Data(set_flow_command)
+
 
     def MFC_Control(self,Port):
         '''This function sends the command to put the MFC into control

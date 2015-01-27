@@ -70,4 +70,5 @@ class Valve():
 
 if __name__ == '__main__':
     X = Valve('A')
+    X.Set_Pressure(1.3)
 

@@ -25,10 +25,10 @@ class Pressure():
             return out
 
     def Get_Plasma_Pressure(self):
-        return self.__Receive_Data('?AV1')
+        return self.__Receive_Data('?AV1').strip()
 
     def Get_Chamber_Pressure(self):
-        return self.__Receive_Data('?AV2')
+        return self.__Receive_Data('?AV2').strip()
 
 
 if __name__ == '__main__':
