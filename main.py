@@ -30,15 +30,63 @@ class Int(Interface):
         '''This function goes through each button in the
         interface and binds functions to their actions'''
         Motion = self.Motion_Control_Object
+        Chuck_Properties = self.Chuck_Properties_Object
 
         self.Process_Container_Object.Vacuum_Button_Object.Button.bind(on_press = self.Valve_Open)
-        self.Process_Container_Object.Move_Button_Object.Button.bind(on_press = lambda widget: Create_Thread(self.Move,
+        self.Process_Container_Object.Move_Button_Object.Button.bind(on_press = lambda widget: Create_Thread(self.Run,
                                                             self.Process_Container_Object.Move_Button_Object.Button))
-        self.Parameter_Object.MFC1_Read_Label_Object.L.text = 'Hello'
 
-        Motion.Home_Button_Object.Button.bind(on_press = lambda widget: Create_Thread(Chuck.Home,))
-        Motion.Ellipsometer_Button_Object.Button.bind(on_press = lambda  widget: Create_Thread(Chuck.Move,'2'))
-        Motion.Nozzle_Button_Object.Button.bind(on_press = lambda  widget: Create_Thread(Chuck.Move,'3'))
+
+        #Bindings from the motion grid
+        Motion.Home_Button_Object.Button.bind(on_press = lambda widget: Create_Thread(self.Home,))
+        Motion.Ellipsometer_Button_Object.Button.bind(on_press = lambda widget: Create_Thread(self.Move,'1',Motion.Ellipsometer_Button_Object.Button))
+        Motion.Pre_Nozzle_Button_Object.Button.bind(on_press = lambda widget: Create_Thread(self.Move,'2', Motion.Pre_Nozzle_Button_Object.Button))
+        Motion.Nozzle_Button_Object.Button.bind(on_press = lambda widget: Create_Thread(self.Move,'3',Motion.Nozzle_Button_Object.Button))
+
+
+    def Speed(self):
+        print "speed1"
+        Chuck_Properties = self.Chuck_Properties_Object
+        Speed_Temp = Chuck_Properties.Speed_Button_Object.Button.text
+        while self.close_toggle.state == 'normal':
+            if Chuck_Properties.Speed_Button_Object.Button.text != Speed_Temp:
+                while Chuck.is_Busy():
+                    time.sleep(0.1)
+
+                Chuck.Set_X_Speed(Chuck_Properties.Speed_Button_Object.Button.text)
+                Speed_Temp = Chuck_Properties.Speed_Button_Object.Button.text
+
+
+            time.sleep(0.1)
+
+    def Start_Speed(self):
+        Create_Thread(self.Speed,)
+
+
+    def Move_Toggle_Down(self,instance):
+        Motion = self.Motion_Control_Object
+        But = [Motion.Home_Button_Object.Button,Motion.Ellipsometer_Button_Object.Button,
+        Motion.Pre_Nozzle_Button_Object.Button, Motion.Nozzle_Button_Object.Button,
+        Motion.Glove_Button_Object.Button]
+
+        for B in But:
+            if B != instance:
+                B.state = 'normal'
+
+
+    def Move(self,position, instance):
+
+        '''Funciton that moves the chuck, when a button is
+        pressed, all other toggle buttons are set to their normal
+        position and the pressed button is left in the down position'''
+        self.Move_Toggle_Down(instance)
+
+        Chuck.Move(position)
+
+    def Home(self):
+        Motion = self.Motion_Control_Object
+        self.Move_Toggle_Down(Motion.Home_Button_Object.Button)
+        Chuck.Home()
 
     def Valve_Open(self,instance):
         '''This function is bound to the Vacuum Toggle Button,
@@ -80,17 +128,30 @@ class Int(Interface):
         the readings from the MKS pressure sensor'''
         Create_Thread(self.Read_Pressure,)
 
-    def Move(self,instance):
-        print instance.state
-        for i in range(3):
-            if i%2 == 0:
-                Chuck.Move('2')
-            else:
-                Chuck.Move('3')
-            if instance.state == 'normal':
-                break
-        instance.state = 'normal'
+    def Run(self,instance):
+        Motion = self.Motion_Control_Object
+        Chuck.Move('2')
+        Motion.Pre_Nozzle_Button_Object.Button.state = 'down'
+        self.Move_Toggle_Down(Motion.Pre_Nozzle_Button_Object.Button)
 
+        loops = int(self.Chuck_Properties_Object.Loop_Button_Object.Button.text)
+        if loops == '0':
+            instance.state = 'normal'
+        else:
+            for i in range(loops):
+                if i%2 == 0:
+                    Chuck.Move('3')
+                    self.Move_Toggle_Down(Motion.Nozzle_Button_Object.Button)
+                    Motion.Nozzle_Button_Object.Button.state = 'down'
+
+                else:
+                    Chuck.Move('2')
+                    self.Move_Toggle_Down(Motion.Pre_Nozzle_Button_Object.Button)
+                    Motion.Pre_Nozzle_Button_Object.Button.state = 'down'
+
+                if instance.state == 'normal':
+                    break
+            instance.state = 'normal'
 
     def Read_Pressure(self):
         '''This function continually reads the pressure from the MKS
@@ -166,6 +227,24 @@ class Int(Interface):
 
             time.sleep(0.1)
 
+    def to_start(self):
+
+        #Getting the position and speed of the chuck
+        self.Chuck_Properties_Object.Speed_Button_Object.Button.text = Chuck.Get_X_Speed()
+        self.Chuck_Properties_Object.Zpos_Button_Object.Button.text = Chuck.Get_ZPOS()
+
+        #Getting MFC Initial Values
+        self.Parameter_Object.MFC1_Button_Object.Button.text = MFC.Get_Setpoint('1')
+        self.Parameter_Object.MFC2_Button_Object.Button.text = MFC.Get_Setpoint('2')
+        self.Parameter_Object.MFC3_Button_Object.Button.text = MFC.Get_Setpoint('3')
+
+        #Creating Bindings/Threads
+        self.Bind()
+        self.Start_Pressure_Read()
+        self.Start_MFC_Control()
+        self.Start_Set_Pressure()
+        self.Start_Speed()
+
 
 #Opening Connections to Equipment
 Valve = Valve('A')
@@ -176,10 +255,7 @@ Chuck = Chuck('D')
 def main():
 
     Interface = Int()
-    Interface.Bind()
-    Interface.Start_Pressure_Read()
-    Interface.Start_MFC_Control()
-    Interface.Start_Set_Pressure()
+    Interface.to_start()
 
     Interface.run()
 

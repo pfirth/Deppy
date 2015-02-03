@@ -23,6 +23,12 @@ class Chuck():
         while self.Busy:
             time.sleep(0.1)
 
+    def is_Busy(self):
+        if self.Busy:
+            return True
+        return False
+
+
     def __Send_Command(self,command):
         while True:
             self.connection.write(command + '\r')
@@ -66,6 +72,7 @@ class Chuck():
             self.Busy = False
             return x
 
+
     def Move(self,position):
         '''This function moves the chuck in the x direction. The input is either
         1,2,3 or E as strings.'''
@@ -83,11 +90,12 @@ class Chuck():
 
     def Set_X_Speed(self,speed):
         '''This function changes the peak velocity of the chuck'''
+
         self.__Busy()
         self.Busy = True
-        x = self.__Receive_Data('VMX=' + speed)
-        self.VMX = self.Get_X_Speed()
-        return x
+        self.connection.write('VMX=' + speed + '\r')
+        time.sleep(0.3)
+        self.Busy = False
 
     def Get_X_Speed(self):
         '''Returns the current x-axis speed'''
@@ -139,18 +147,26 @@ class Chuck():
         self.ZPOS = self.Get_ZPOS()
         return x
 
+    def RD(self,command):
+        self.__Busy()
+        self.Busy = True
+        self.connection.write(command + '\r')
+        time.sleep(0.3)
+        self.Busy = False
+
+
 if __name__ == '__main__':
-    chk = Chuck('A')
+    #chk = Chuck('D')
+    #chk.Set_X_Speed('100.5')
+    #chk.Move('3')
+    #chk.Set_X_Speed('43.564')
+    #chk.Move('1')
 
+    def s():
+        print 9
 
+    def p(a,b,c,*args):
+        print a,b,c
+        args
 
-
-
-
-
-
-
-
-
-
-
+    p(1,2,3,s())

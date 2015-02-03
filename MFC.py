@@ -59,9 +59,13 @@ class MFC():
         command = '$IW' + self.m + ':' +str(Port) + ':' + '3'
         self.__Receive_Data(command)
 
+    def Get_Setpoint(self,Port):
+        set_flow_command = '$AR' + self.m + ':'+ str(Port)
+        ret = self.__Receive_Data(set_flow_command).split(':')[2]
+        return ret
+
 
 if __name__ == '__main__':
-    X = MFC('A',2)
+    X = MFC('C',1)
 
-    #print X. Get_Flowrate('3')
-    print X.Set_Flowrate('3','10.34')
+    print X.Get_Setpoint('1')
